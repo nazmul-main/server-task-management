@@ -53,6 +53,28 @@ async function run() {
       res.send(result);
     })
 
+    // update
+    app.put('/task_update/:id', async (req, res) => {
+      const id = req.params.id;
+      const update = req.body
+      console.log(id, update);
+      const filter = { _id: new ObjectId(id) }
+      const option = { upsert: true }
+      const task = {
+        $set: {
+
+          title:update.title, 
+          description: update.description, 
+          date: update.date, 
+          priority: update.priority, 
+         
+        }
+      }
+      const result = await To_do_Collection.updateOne(filter, task, option);
+      res.send(result);
+      console.log(result);
+    })
+
 
     /* delete */
 
