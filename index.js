@@ -5,7 +5,16 @@ require("dotenv").config();
 const port = process.env.PORT || 3000;
 
 //Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      'http://localhost:3000',
+      'https://smart-asset-managment.web.app'
+
+    ],
+
+  }),
+)
 app.use(express.json());
 
 
@@ -89,7 +98,7 @@ async function run() {
 
 
     // await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
