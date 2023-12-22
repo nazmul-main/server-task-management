@@ -12,7 +12,7 @@ app.use(express.json());
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.idkvt6k.mongodb.net/?retryWrites=true&w=majority`;
 
 const TaskManegement = 'smooth_taks';
@@ -33,13 +33,39 @@ async function run() {
     const To_do_Collection = client.db(TaskManegement).collection("to_do_task");
 
     //task added api 
-    app.post('/task' , async (req, res) => {
-      console.log(req.body);
-      res.send
+    app.post('/task', async (req, res) => {
+      const task = req.body
+      const result = await To_do_Collection.insertOne(task);
+      console.log(result);
+      res.send(result);
     })
 
-    
-    
+    app.get('/all_task', async (req, res) => {
+      const cursor = To_do_Collection.find()
+      const result = await cursor.toArray()
+      res.send(result);
+    });
+
+    app.get("/todo_task_filter", async (req, res) => {
+      const email = req.query.email;
+      const query = { userEmail: email, }
+      const result = await To_do_Collection.find(query).toArray();
+      res.send(result);
+    })
+
+
+    /* delete */
+
+    app.delete('/all_task/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: new ObjectId(id) };
+      const result = await To_do_Collection.deleteOne(query);
+      res.send(result)
+    });
+
+
+
     // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
@@ -61,9 +87,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('task manegement is running....')
+  res.send('task manegement is running....')
 })
 
 app.listen(port, () => {
-    console.log(`task manegement is running ${port}`)
+  console.log(`task manegement is running ${port}`)
 })
